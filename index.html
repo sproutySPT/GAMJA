@@ -1,0 +1,2636 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>감튀 키우기</title>
+<style>
+/* ============================================================
+   감튀 키우기 - 스타일시트
+   디자인 토큰
+   --cream: #FFF6E9 (배경)
+   --gold:  #F4A93B (감튀 골드, 메인 포인트)
+   --gold-dark: #D88A1F
+   --brown: #6B3E1F (진한 갈색, 보조 포인트)
+   --text:  #3A2418 (텍스트)
+   --ketchup: #E84545 (포인트/경고)
+   --mint: #3DD68C (성공/긍정)
+   --paper: #FFFFFF (카드 배경)
+   ============================================================ */
+
+:root {
+  --cream: #FFF6E9;
+  --gold: #F4A93B;
+  --gold-light: #FFD27A;
+  --gold-dark: #D88A1F;
+  --brown: #6B3E1F;
+  --text: #3A2418;
+  --text-soft: #8C7A6B;
+  --ketchup: #E84545;
+  --mint: #3DD68C;
+  --paper: #FFFFFF;
+  --shadow-soft: 0 4px 14px rgba(107, 62, 31, 0.12);
+  --shadow-strong: 0 10px 30px rgba(107, 62, 31, 0.22);
+  --radius-lg: 22px;
+  --radius-md: 16px;
+  --radius-sm: 10px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
+    'Malgun Gothic', 'Noto Sans KR', sans-serif;
+  background: var(--cream);
+  color: var(--text);
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+  user-select: none;
+}
+
+#app {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(244,169,59,0.10), transparent 50%),
+    var(--cream);
+}
+
+/* ============== 상단바 ============== */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(12px + var(--safe-top)) 16px 10px;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: linear-gradient(to bottom, var(--cream) 80%, rgba(255,246,233,0));
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.level-badge {
+  background: var(--brown);
+  color: #FFF1D8;
+  font-weight: 800;
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  box-shadow: var(--shadow-soft);
+}
+
+.exp-bar-wrap { flex: 1; max-width: 140px; }
+.exp-bar {
+  height: 8px;
+  background: rgba(107,62,31,0.15);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.exp-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  border-radius: 6px;
+  transition: width 0.4s ease;
+}
+
+.money-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--paper);
+  padding: 7px 14px;
+  border-radius: 20px;
+  font-weight: 800;
+  font-size: 14px;
+  box-shadow: var(--shadow-soft);
+  color: var(--gold-dark);
+}
+.coin-icon { font-size: 15px; }
+
+/* ============== 이벤트 배너 ============== */
+.event-banner {
+  margin: 0 16px 8px;
+  background: linear-gradient(90deg, #FFE9C2, #FFD8A8);
+  border: 2px dashed var(--gold-dark);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--brown);
+  animation: slideDown 0.4s ease;
+}
+.event-banner[hidden] { display: none; }
+.event-emoji { font-size: 20px; }
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============== 화면 영역 ============== */
+main#screens {
+  flex: 1;
+  padding: 4px 16px calc(100px + var(--safe-bottom));
+  position: relative;
+}
+
+.screen {
+  display: none;
+  animation: fadeIn 0.25s ease;
+}
+.screen.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============== 카드 ============== */
+.card {
+  background: var(--paper);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  box-shadow: var(--shadow-soft);
+  margin-bottom: 14px;
+}
+
+.card-title {
+  font-size: 17px;
+  font-weight: 800;
+  margin: 0 0 14px;
+  color: var(--brown);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-soft);
+  margin: 18px 0 8px;
+  text-transform: none;
+}
+.section-label:first-child { margin-top: 0; }
+
+/* ============== 가게 화면 ============== */
+.shop-stage {
+  position: relative;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.customer-area {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background: linear-gradient(180deg, #FFE9C8, #FFF6E9);
+  border-radius: var(--radius-lg);
+  box-shadow: inset 0 0 0 2px rgba(244,169,59,0.25);
+  transition: transform 0.3s ease;
+}
+
+.customer-placeholder { text-align: center; opacity: 0.7; }
+.customer-emoji { font-size: 48px; margin-bottom: 6px; }
+.customer-hint { font-size: 13px; color: var(--text-soft); margin: 0; font-weight: 600; }
+
+.customer-area.has-customer {
+  animation: popIn 0.4s ease;
+}
+@keyframes popIn {
+  0% { transform: scale(0.85); opacity: 0; }
+  60% { transform: scale(1.05); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.customer-card-emoji { font-size: 56px; }
+.customer-card-name { font-size: 15px; font-weight: 800; margin-top: 4px; color: var(--brown); }
+.customer-card-line { font-size: 12.5px; color: var(--text-soft); margin-top: 2px; font-weight: 600; max-width: 220px; text-align: center; }
+.customer-card-want { font-size: 11.5px; margin-top: 6px; background: rgba(244,169,59,0.18); padding: 3px 10px; border-radius: 12px; color: var(--gold-dark); font-weight: 700; }
+
+.fry-display {
+  position: absolute;
+  bottom: -6px;
+  right: 4px;
+  font-size: 64px;
+  filter: drop-shadow(0 6px 8px rgba(107,62,31,0.25));
+  animation: floatFry 3s ease-in-out infinite;
+}
+@keyframes floatFry {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50% { transform: translateY(-8px) rotate(4deg); }
+}
+
+.quick-stats-card {
+  display: flex;
+  justify-content: space-between;
+  text-align: center;
+  padding: 14px 10px;
+}
+.quick-stat { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.qs-label { font-size: 11.5px; color: var(--text-soft); font-weight: 700; }
+.qs-value { font-size: 19px; font-weight: 800; color: var(--brown); }
+
+/* ============== 버튼 ============== */
+.btn {
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.15s ease;
+  font-family: inherit;
+}
+.btn:active { transform: scale(0.96); }
+
+.btn-big {
+  width: 100%;
+  padding: 16px;
+  font-size: 16px;
+  box-shadow: var(--shadow-soft);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color: #fff8ec;
+}
+.btn-primary:disabled {
+  background: #E8DCC8;
+  color: #B6A78F;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: var(--paper);
+  color: var(--ketchup);
+  border: 2px solid #F4C9C9;
+}
+
+.btn-small {
+  padding: 8px 16px;
+  font-size: 13px;
+  border-radius: var(--radius-sm);
+}
+
+/* ============== 조리 화면 ============== */
+.select-group { margin-bottom: 18px; }
+.select-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--brown);
+  margin-bottom: 8px;
+}
+.slider-value {
+  background: var(--gold);
+  color: #fff;
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 9px 13px;
+  border-radius: 14px;
+  background: #FBF1E0;
+  border: 2px solid transparent;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.chip.selected {
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  border-color: var(--gold-dark);
+  color: #fff;
+  box-shadow: var(--shadow-soft);
+  transform: translateY(-1px);
+}
+.chip.locked {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.chip-emoji { font-size: 16px; }
+
+.slider {
+  width: 100%;
+  height: 8px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #FBE4BD, #F4A93B, #FBE4BD);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 4px solid var(--gold-dark);
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+}
+.slider::-moz-range-thumb {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 4px solid var(--gold-dark);
+  cursor: pointer;
+}
+
+/* ============== 결과 화면 ============== */
+#screen-result {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  background: rgba(58,36,24,0.55);
+  padding: 0 16px;
+  overflow-y: auto;
+}
+#screen-result.active {
+  display: flex;
+}
+#screen-result .result-card {
+  margin-top: max(60px, calc(60px + var(--safe-top)));
+  margin-bottom: 40px;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  animation: resultPop 0.35s cubic-bezier(.2,1.4,.4,1);
+}
+@keyframes resultPop {
+  0% { transform: scale(0.8) translateY(20px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.result-fry-emoji {
+  font-size: 80px;
+  margin-bottom: 4px;
+  animation: resultBounce 0.6s ease;
+}
+@keyframes resultBounce {
+  0% { transform: scale(0.5) rotate(-10deg); }
+  50% { transform: scale(1.15) rotate(8deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+.result-grade {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+.result-score {
+  font-size: 42px;
+  font-weight: 900;
+  color: var(--brown);
+  margin-bottom: 14px;
+}
+.score-max { font-size: 18px; color: var(--text-soft); font-weight: 700; }
+
+.score-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 16px;
+}
+.breakdown-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+}
+.breakdown-label { width: 64px; text-align: left; color: var(--text-soft); font-weight: 700; flex-shrink: 0; }
+.breakdown-bar-wrap { flex: 1; height: 8px; background: #F2E8D8; border-radius: 5px; overflow: hidden; }
+.breakdown-bar { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius: 5px; transition: width 0.5s ease; }
+.breakdown-num { width: 32px; text-align: right; font-weight: 800; color: var(--brown); }
+
+.result-customer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #FFF3DE;
+  border-radius: var(--radius-md);
+  padding: 12px;
+  margin-bottom: 14px;
+  text-align: left;
+}
+.result-customer[hidden] { display: none; }
+.rc-emoji { font-size: 34px; }
+.rc-info { flex: 1; }
+.rc-name { font-weight: 800; font-size: 13.5px; color: var(--brown); }
+.rc-line { font-size: 12px; color: var(--text-soft); margin-top: 2px; }
+.rc-bonus {
+  background: var(--mint);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.result-earn {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--gold-dark);
+  margin-bottom: 16px;
+}
+
+/* ============== 도감 ============== */
+.dex-count { font-size: 13px; color: var(--text-soft); font-weight: 700; }
+.dex-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.dex-item {
+  aspect-ratio: 1;
+  background: #FBF1E0;
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px;
+  text-align: center;
+}
+.dex-item.found {
+  background: linear-gradient(135deg, #FFF3DE, #FFE3B0);
+  box-shadow: var(--shadow-soft);
+}
+.dex-item.empty { opacity: 0.5; }
+.dex-emoji { font-size: 22px; }
+.dex-label { font-size: 9.5px; font-weight: 700; color: var(--text-soft); line-height: 1.2; }
+.dex-item.found .dex-label { color: var(--brown); }
+.dex-score { font-size: 10px; font-weight: 800; color: var(--gold-dark); }
+
+/* ============== 퀘스트 / 업적 ============== */
+.subtab-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.subtab {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: #F2E8D8;
+  color: var(--text-soft);
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+}
+.subtab.active {
+  background: var(--brown);
+  color: #FFF1D8;
+}
+
+.subtab-panel { display: none; }
+.subtab-panel.active { display: block; }
+
+.quest-list { display: flex; flex-direction: column; gap: 10px; }
+.quest-item {
+  background: var(--paper);
+  border-radius: var(--radius-md);
+  padding: 13px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--shadow-soft);
+}
+.quest-item.done { background: #FFF8EA; }
+.quest-icon { font-size: 26px; flex-shrink: 0; }
+.quest-info { flex: 1; min-width: 0; }
+.quest-name { font-weight: 800; font-size: 13.5px; color: var(--brown); }
+.quest-desc { font-size: 11.5px; color: var(--text-soft); margin-top: 2px; }
+.quest-progress-bar { height: 6px; background: #F2E8D8; border-radius: 4px; margin-top: 6px; overflow: hidden; }
+.quest-progress-fill { height: 100%; background: var(--mint); border-radius: 4px; transition: width .4s ease; }
+.quest-reward { font-size: 11px; font-weight: 700; color: var(--gold-dark); margin-top: 4px; }
+.quest-claim-btn {
+  flex-shrink: 0;
+  padding: 8px 12px;
+  font-size: 12px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 800;
+  background: var(--gold);
+  color: #fff;
+  cursor: pointer;
+}
+.quest-claim-btn:disabled {
+  background: #E8DCC8;
+  color: #B6A78F;
+}
+.quest-claimed-badge { font-size: 11px; font-weight: 800; color: var(--mint); flex-shrink: 0; }
+
+.daily-card { text-align: center; }
+.daily-emoji { font-size: 48px; margin-bottom: 8px; }
+.daily-desc { color: var(--text-soft); font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+.daily-streak { font-weight: 800; color: var(--brown); margin-bottom: 14px; }
+
+/* ============== 상점 ============== */
+.store-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 6px; }
+.store-item {
+  background: var(--paper);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--shadow-soft);
+}
+.store-item.owned { background: #F2FBF6; }
+.store-icon { font-size: 28px; flex-shrink: 0; }
+.store-info { flex: 1; min-width: 0; }
+.store-name { font-weight: 800; font-size: 13.5px; color: var(--brown); }
+.store-desc { font-size: 11.5px; color: var(--text-soft); margin-top: 2px; }
+.store-level { font-size: 11px; color: var(--gold-dark); font-weight: 700; margin-top: 2px; }
+.store-buy-btn {
+  flex-shrink: 0;
+  padding: 9px 13px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 800;
+  font-size: 12px;
+  background: var(--gold);
+  color: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.store-buy-btn:disabled {
+  background: #E8DCC8;
+  color: #B6A78F;
+  cursor: not-allowed;
+}
+.store-owned-badge {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--mint);
+}
+
+/* ============== 통계 ============== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.stat-box {
+  background: #FBF1E0;
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  text-align: center;
+}
+.stat-box-label { font-size: 11px; color: var(--text-soft); font-weight: 700; }
+.stat-box-value { font-size: 18px; font-weight: 800; color: var(--brown); margin-top: 4px; }
+
+.grade-stats { display: flex; flex-direction: column; gap: 6px; }
+.grade-stat-row { display: flex; align-items: center; gap: 8px; font-size: 12.5px; }
+.grade-stat-label { width: 90px; font-weight: 700; flex-shrink: 0; }
+.grade-stat-bar-wrap { flex: 1; height: 10px; background: #F2E8D8; border-radius: 5px; overflow: hidden; }
+.grade-stat-bar { height: 100%; border-radius: 5px; transition: width 0.4s ease; }
+.grade-stat-num { width: 28px; text-align: right; font-weight: 800; }
+
+/* ============== 설정 ============== */
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #F2E8D8;
+}
+.setting-row:last-of-type { border-bottom: none; }
+.setting-label { font-weight: 700; font-size: 14px; }
+
+.switch { position: relative; display: inline-block; width: 48px; height: 28px; flex-shrink: 0; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.switch-slider {
+  position: absolute; cursor: pointer; inset: 0;
+  background: #E8DCC8; border-radius: 28px; transition: 0.2s;
+}
+.switch-slider::before {
+  content: ""; position: absolute; height: 22px; width: 22px;
+  left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.switch input:checked + .switch-slider { background: var(--gold); }
+.switch input:checked + .switch-slider::before { transform: translateX(20px); }
+
+#resetBtn { margin-top: 18px; }
+
+/* ============== 토스트 ============== */
+.toast-area {
+  position: fixed;
+  top: calc(70px + var(--safe-top));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  width: 100%;
+  max-width: 440px;
+  padding: 0 16px;
+}
+.toast {
+  background: var(--brown);
+  color: #FFF1D8;
+  padding: 10px 18px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: var(--shadow-strong);
+  animation: toastIn 0.3s ease, toastOut 0.3s ease 2.2s forwards;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@keyframes toastIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes toastOut { from { opacity: 1; } to { opacity: 0; transform: translateY(-10px); } }
+
+/* ============== 하단 탭바 ============== */
+.tabbar {
+  position: fixed;
+  bottom: 0;
+  left: 0; right: 0;
+  margin: 0 auto;
+  max-width: 480px;
+  display: flex;
+  background: var(--paper);
+  box-shadow: 0 -4px 16px rgba(107,62,31,0.12);
+  padding: 8px 4px calc(8px + var(--safe-bottom));
+  z-index: 30;
+}
+.tab-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 2px;
+  cursor: pointer;
+  color: var(--text-soft);
+  border-radius: 12px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.tab-btn.active { color: var(--gold-dark); background: #FFF3DE; }
+.tab-icon { font-size: 19px; }
+.tab-label { font-size: 10.5px; font-weight: 800; }
+
+/* ============== 반응형 (PC/태블릿) ============== */
+@media (min-width: 600px) {
+  #app {
+    max-width: 480px;
+    box-shadow: 0 0 40px rgba(107,62,31,0.15);
+    border-radius: 0 0 24px 24px;
+  }
+  body { display: flex; justify-content: center; background: #F2E2C4; }
+}
+
+@media (hover: hover) {
+  .chip:hover { transform: translateY(-1px); }
+  .btn-primary:hover:not(:disabled) { filter: brightness(1.05); }
+  .tab-btn:hover { color: var(--gold-dark); }
+}
+
+/* 접근성: 모션 최소화 */
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
+
+
+/* ── 오프닝 스플래시 ── */
+#openingSplash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 1;
+  animation: splashSequence 1.8s ease-in-out forwards;
+}
+
+#openingSplash img {
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.02);
+  animation: splashImageZoom 1.8s ease-in-out forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes splashSequence {
+  0%   { opacity: 0; }
+  8%   { opacity: 1; }
+  68%  { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
+}
+
+@keyframes splashImageZoom {
+  0%   { transform: scale(1.06); filter: blur(0.5px); }
+  68%  { transform: scale(1.02); filter: blur(0px); }
+  100% { transform: scale(1); filter: blur(1px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #openingSplash, #openingSplash img {
+    animation: none !important;
+  }
+  #openingSplash {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+</style>
+</head>
+<body>
+
+<!-- 오프닝 스플래시 -->
+<div id="openingSplash" aria-hidden="true">
+  <img src="opening.jpg" alt="opening">
+</div>
+
+
+<div id="app">
+
+  <!-- ===================== 상단 헤더 ===================== -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="level-badge" id="levelBadge">Lv.1</div>
+      <div class="exp-bar-wrap">
+        <div class="exp-bar"><div class="exp-fill" id="expFill"></div></div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="money-pill" id="moneyPill">
+        <span class="coin-icon">🪙</span>
+        <span id="moneyValue">0</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- 이벤트 배너 (랜덤 이벤트 발생시 표시) -->
+  <div class="event-banner" id="eventBanner" hidden>
+    <span class="event-emoji" id="eventEmoji">🎉</span>
+    <span class="event-text" id="eventText"></span>
+  </div>
+
+  <!-- ===================== 메인 화면 영역 ===================== -->
+  <main id="screens">
+
+    <!-- ---------- 가게(홈) 화면 ---------- -->
+    <section class="screen active" id="screen-shop">
+      <div class="shop-stage">
+        <div class="customer-area" id="customerArea">
+          <div class="customer-placeholder">
+            <div class="customer-emoji">🏪</div>
+            <p class="customer-hint">손님을 기다리는 중...</p>
+          </div>
+        </div>
+        <div class="fry-display" id="fryDisplay">
+          <div class="fry-character" id="fryCharacter">🍟</div>
+        </div>
+      </div>
+
+      <div class="card quick-stats-card">
+        <div class="quick-stat">
+          <span class="qs-label">총 판매</span>
+          <span class="qs-value" id="statTotalFries">0</span>
+        </div>
+        <div class="quick-stat">
+          <span class="qs-label">최고 점수</span>
+          <span class="qs-value" id="statBestScore">0</span>
+        </div>
+        <div class="quick-stat">
+          <span class="qs-label">손님 수</span>
+          <span class="qs-value" id="statCustomers">0</span>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-big" id="goCookBtn">🍟 감튀 만들기</button>
+    </section>
+
+    <!-- ---------- 조리 화면 ---------- -->
+    <section class="screen" id="screen-cook">
+      <div class="card cook-card">
+        <h2 class="card-title">감튀 조리하기</h2>
+
+        <div class="select-group">
+          <label class="select-label">감자 선택</label>
+          <div class="chip-row" id="potatoChips"></div>
+        </div>
+
+        <div class="select-group">
+          <label class="select-label">기름 선택</label>
+          <div class="chip-row" id="oilChips"></div>
+        </div>
+
+        <div class="select-group">
+          <label class="select-label">시즈닝 선택</label>
+          <div class="chip-row" id="seasoningChips"></div>
+        </div>
+
+        <div class="select-group">
+          <label class="select-label">소금 양 <span class="slider-value" id="saltValueLabel">50</span></label>
+          <input type="range" min="0" max="100" value="50" class="slider" id="saltSlider">
+        </div>
+
+        <div class="select-group">
+          <label class="select-label">튀기는 시간 <span class="slider-value" id="fryValueLabel">50</span></label>
+          <input type="range" min="0" max="100" value="50" class="slider" id="frySlider">
+        </div>
+
+        <button class="btn btn-primary btn-big" id="makeFryBtn">🔥 튀기기!</button>
+      </div>
+    </section>
+
+    <!-- ---------- 결과 화면(오버레이) ---------- -->
+    <section class="screen" id="screen-result">
+      <div class="card result-card">
+        <div class="result-fry-emoji" id="resultFryEmoji">🍟</div>
+        <div class="result-grade" id="resultGrade">평범함</div>
+        <div class="result-score" id="resultScore">0<span class="score-max">/100</span></div>
+
+        <div class="score-breakdown" id="scoreBreakdown"></div>
+
+        <div class="result-customer" id="resultCustomer" hidden>
+          <div class="rc-emoji" id="rcEmoji">🎒</div>
+          <div class="rc-info">
+            <div class="rc-name" id="rcName">학생</div>
+            <div class="rc-line" id="rcLine">"야르하네요"</div>
+          </div>
+          <div class="rc-bonus" id="rcBonus" hidden>선호 재료 보너스! 🎉</div>
+        </div>
+
+        <div class="result-earn" id="resultEarn">+0원</div>
+
+        <button class="btn btn-primary btn-big" id="resultContinueBtn">계속하기</button>
+      </div>
+    </section>
+
+    <!-- ---------- 도감 화면 ---------- -->
+    <section class="screen" id="screen-dex">
+      <div class="card">
+        <h2 class="card-title">레시피 도감 <span class="dex-count" id="dexCount">0/0</span></h2>
+        <div class="dex-grid" id="dexGrid"></div>
+      </div>
+    </section>
+
+    <!-- ---------- 퀘스트/업적 화면 ---------- -->
+    <section class="screen" id="screen-quest">
+      <div class="subtab-row">
+        <button class="subtab active" data-subtab="quest">퀘스트</button>
+        <button class="subtab" data-subtab="achievement">업적</button>
+        <button class="subtab" data-subtab="daily">일일보상</button>
+      </div>
+
+      <div class="subtab-panel active" id="panel-quest">
+        <div class="quest-list" id="questList"></div>
+      </div>
+
+      <div class="subtab-panel" id="panel-achievement">
+        <div class="quest-list" id="achievementList"></div>
+      </div>
+
+      <div class="subtab-panel" id="panel-daily">
+        <div class="card daily-card">
+          <div class="daily-emoji">🎁</div>
+          <p class="daily-desc">매일 출석하고 보상을 받아보세요!</p>
+          <div class="daily-streak" id="dailyStreak">연속 출석: 0일</div>
+          <button class="btn btn-primary btn-big" id="dailyClaimBtn">오늘의 보상 받기</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- 상점(해금/업그레이드) 화면 ---------- -->
+    <section class="screen" id="screen-store">
+      <div class="subtab-row">
+        <button class="subtab active" data-subtab="ingredient">재료 해금</button>
+        <button class="subtab" data-subtab="upgrade">장비 업그레이드</button>
+      </div>
+
+      <div class="subtab-panel active" id="panel-ingredient">
+        <h3 class="section-label">감자</h3>
+        <div class="store-list" id="storePotato"></div>
+        <h3 class="section-label">기름</h3>
+        <div class="store-list" id="storeOil"></div>
+        <h3 class="section-label">시즈닝</h3>
+        <div class="store-list" id="storeSeasoning"></div>
+      </div>
+
+      <div class="subtab-panel" id="panel-upgrade">
+        <div class="store-list" id="storeUpgrade"></div>
+      </div>
+    </section>
+
+    <!-- ---------- 통계 화면 ---------- -->
+    <section class="screen" id="screen-stats">
+      <div class="card">
+        <h2 class="card-title">통계</h2>
+        <div class="stats-grid" id="statsGrid"></div>
+        <h3 class="section-label">등급별 판매 횟수</h3>
+        <div class="grade-stats" id="gradeStats"></div>
+      </div>
+    </section>
+
+    <!-- ---------- 설정 화면 ---------- -->
+    <section class="screen" id="screen-settings">
+      <div class="card">
+        <h2 class="card-title">설정</h2>
+        <div class="setting-row">
+          <span class="setting-label">🔊 효과음</span>
+          <label class="switch">
+            <input type="checkbox" id="sfxToggle" checked>
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+        <div class="setting-row">
+          <span class="setting-label">🎵 배경음악</span>
+          <label class="switch">
+            <input type="checkbox" id="bgmToggle" checked>
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+        <button class="btn btn-secondary btn-big" id="resetBtn">게임 데이터 초기화</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================== 토스트 알림 ===================== -->
+  <div class="toast-area" id="toastArea"></div>
+
+  <!-- ===================== 하단 탭 네비게이션 ===================== -->
+  <nav class="tabbar" id="tabbar">
+    <button class="tab-btn active" data-screen="shop">
+      <span class="tab-icon">🏪</span><span class="tab-label">가게</span>
+    </button>
+    <button class="tab-btn" data-screen="dex">
+      <span class="tab-icon">📖</span><span class="tab-label">도감</span>
+    </button>
+    <button class="tab-btn" data-screen="quest">
+      <span class="tab-icon">📋</span><span class="tab-label">퀘스트</span>
+    </button>
+    <button class="tab-btn" data-screen="store">
+      <span class="tab-icon">🛒</span><span class="tab-label">상점</span>
+    </button>
+    <button class="tab-btn" data-screen="stats">
+      <span class="tab-icon">📊</span><span class="tab-label">통계</span>
+    </button>
+    <button class="tab-btn" data-screen="settings">
+      <span class="tab-icon">⚙️</span><span class="tab-label">설정</span>
+    </button>
+  </nav>
+
+</div>
+
+<script>
+
+/* ===== data.js ===== */
+/* ============================================================
+   감튀 키우기 - 게임 데이터
+   재료 / 손님 / 퀘스트 / 업적 / 랜덤이벤트 / 업그레이드 정의
+   ============================================================ */
+
+// ----------------------------------------------------------------
+// 재료 (시즈닝류) - 후추부터는 해금형
+// quality: 해당 재료가 줄 수 있는 최대 보너스 점수 영향력
+// ----------------------------------------------------------------
+const SEASONINGS = [
+  { id: 'none',        name: '없음',          emoji: '⬜', unlockCost: 0,     desc: '아무것도 뿌리지 않는다', tier: 0, flavor: 'plain' },
+  { id: 'pepper',      name: '후추',          emoji: '⚫', unlockCost: 500,   desc: '알싸한 향을 더한다', tier: 1, flavor: 'savory' },
+  { id: 'butter',      name: '버터',          emoji: '🧈', unlockCost: 800,   desc: '고소함이 차오른다', tier: 1, flavor: 'rich' },
+  { id: 'cheese',      name: '치즈',          emoji: '🧀', unlockCost: 1200,  desc: '녹아내리는 풍미', tier: 1, flavor: 'rich' },
+  { id: 'spicy',       name: '스파이시 시즈닝', emoji: '🌶️', unlockCost: 1500,  desc: '매콤하게 톡 쏜다', tier: 2, flavor: 'spicy' },
+  { id: 'cajun',       name: '케이준 시즈닝',  emoji: '🔥', unlockCost: 2000,  desc: '강렬한 남부 향신료', tier: 2, flavor: 'spicy' },
+  { id: 'honeybutter', name: '허니버터',      emoji: '🍯', unlockCost: 2500,  desc: '달콤하고 고소하다', tier: 2, flavor: 'sweet' },
+  { id: 'sweetpotato', name: '고구마 소스',   emoji: '🍠', unlockCost: 3000,  desc: '은은한 단맛', tier: 2, flavor: 'sweet' },
+  { id: 'firenoodle',  name: '불닭 소스',     emoji: '🐔', unlockCost: 4000,  desc: '극한의 매운맛', tier: 3, flavor: 'spicy' },
+  { id: 'wasabi',      name: '와사비',        emoji: '🟢', unlockCost: 4500,  desc: '코끝이 찡해진다', tier: 3, flavor: 'sharp' },
+  { id: 'truffle',     name: '트러플',        emoji: '🍄', unlockCost: 6000,  desc: '고급스러운 흙향', tier: 3, flavor: 'rich' },
+  { id: 'radioactive', name: '방사능',        emoji: '☢️', unlockCost: 9000,  desc: '먹으면... 괜찮겠지?', tier: 4, flavor: 'chaos' },
+  { id: 'grenade',     name: '수류탄 소스',   emoji: '💣', unlockCost: 10000, desc: '한입에 입안이 폭발한다', tier: 4, flavor: 'chaos' },
+  { id: 'cosmic',      name: '우주 시즈닝',   emoji: '🌌', unlockCost: 15000, desc: '은하수의 맛', tier: 4, flavor: 'chaos' },
+  { id: 'alienCheese', name: '외계 치즈',     emoji: '👽', unlockCost: 20000, desc: '정체불명의 치즈', tier: 4, flavor: 'chaos' },
+];
+
+// ----------------------------------------------------------------
+// 감자 종류 (해금형) - 기본 품질 보너스
+// ----------------------------------------------------------------
+const POTATOES = [
+  { id: 'normal',  name: '일반 감자',   emoji: '🥔', unlockCost: 0,    quality: 60 },
+  { id: 'fresh',   name: '신선한 감자', emoji: '🥔', unlockCost: 600,  quality: 75 },
+  { id: 'organic', name: '유기농 감자', emoji: '🌱', unlockCost: 2200, quality: 88 },
+  { id: 'golden',  name: '황금 감자',   emoji: '✨', unlockCost: 7000, quality: 97 },
+  { id: 'cosmic',  name: '우주 감자',   emoji: '🪐', unlockCost: 18000, quality: 100 },
+];
+
+// ----------------------------------------------------------------
+// 기름 종류 (해금형)
+// ----------------------------------------------------------------
+const OILS = [
+  { id: 'normal',  name: '일반 식용유', emoji: '🛢️', unlockCost: 0,    quality: 60 },
+  { id: 'corn',    name: '콘 오일',     emoji: '🌽', unlockCost: 700,  quality: 78 },
+  { id: 'olive',   name: '올리브유',    emoji: '🫒', unlockCost: 2500, quality: 90 },
+  { id: 'truffleOil', name: '트러플 오일', emoji: '🍄', unlockCost: 8000, quality: 98 },
+  { id: 'stellar', name: '별빛 오일',   emoji: '⭐', unlockCost: 19000, quality: 100 },
+];
+
+// ----------------------------------------------------------------
+// 손님 타입
+// wantSeasoning: 선호하는 재료 id 배열 (하나라도 맞으면 보너스)
+// ----------------------------------------------------------------
+const CUSTOMER_TYPES = [
+  {
+    id: 'student', name: '학생', emoji: '🎒',
+    wantSeasoning: ['honeybutter', 'sweetpotato', 'cheese'],
+    patience: 'normal', payMultiplier: 1.0,
+    line: '용돈으로 먹는 행복, 감튀 하나요!'
+  },
+  {
+    id: 'worker', name: '회사원', emoji: '💼',
+    wantSeasoning: ['pepper', 'cajun', 'truffle'],
+    patience: 'low', payMultiplier: 1.3,
+    line: '점심시간 끝나기 전에 빨리 부탁해요.'
+  },
+  {
+    id: 'athlete', name: '운동선수', emoji: '🏃',
+    wantSeasoning: ['none', 'pepper'],
+    patience: 'high', payMultiplier: 1.1,
+    line: '담백하고 든든한 걸로 주세요!'
+  },
+  {
+    id: 'alien', name: '외계인', emoji: '👽',
+    wantSeasoning: ['cosmic', 'alienCheese', 'radioactive'],
+    patience: 'high', payMultiplier: 2.0,
+    line: '지구의 튀긴 감자... 흥미롭군.'
+  },
+  {
+    id: 'robot', name: '로봇', emoji: '🤖',
+    wantSeasoning: ['none', 'wasabi'],
+    patience: 'high', payMultiplier: 1.5,
+    line: '최적의 영양 효율을 요구합니다.'
+  },
+  {
+    id: 'gourmet', name: '미식가', emoji: '🎩',
+    wantSeasoning: ['truffle', 'cajun', 'wasabi'],
+    patience: 'low', payMultiplier: 1.8,
+    line: '진짜 실력을 보여주시죠.'
+  },
+];
+
+// ----------------------------------------------------------------
+// 업그레이드
+// ----------------------------------------------------------------
+const UPGRADES = [
+  {
+    id: 'fryer', name: '프라이어', emoji: '🍳',
+    desc: '튀김 시간 정확도가 올라간다',
+    maxLevel: 5, baseCost: 1000, costMul: 1.8,
+    effect: '튀김시간 점수 +레벨*3'
+  },
+  {
+    id: 'fridge', name: '냉장고', emoji: '🧊',
+    desc: '감자 신선도가 오래 유지된다',
+    maxLevel: 5, baseCost: 1200, costMul: 1.8,
+    effect: '감자품질 점수 +레벨*3'
+  },
+  {
+    id: 'saltDispenser', name: '자동 소금 분사기', emoji: '🧂',
+    desc: '소금 비율을 자동으로 맞춰준다',
+    maxLevel: 5, baseCost: 1500, costMul: 1.8,
+    effect: '소금비율 점수 +레벨*3'
+  },
+  {
+    id: 'autoFryer', name: '자동 튀김기', emoji: '⚙️',
+    desc: '조리 전체 안정성이 올라간다',
+    maxLevel: 5, baseCost: 3000, costMul: 2.0,
+    effect: '전체 점수 +레벨*2'
+  },
+  {
+    id: 'cutter', name: '감자 절단기', emoji: '🔪',
+    desc: '재료 조합 점수가 쉽게 오른다',
+    maxLevel: 5, baseCost: 2500, costMul: 1.9,
+    effect: '재료조합 점수 +레벨*3'
+  },
+  {
+    id: 'aiChef', name: 'AI 셰프', emoji: '🤖',
+    desc: '모든 항목에 미세한 보정을 더한다',
+    maxLevel: 3, baseCost: 10000, costMul: 2.5,
+    effect: '전체 점수 +레벨*4'
+  },
+];
+
+// ----------------------------------------------------------------
+// 퀘스트
+// type: 'count' (누적 카운트), 'score' (점수 달성), 'flag' (특정 조건)
+// ----------------------------------------------------------------
+const QUEST_LIST = [
+  { id: 'q_first_fry', name: '첫 감튀 만들기', desc: '감튀를 1번 만들어보세요', type: 'totalFries', target: 1, reward: { money: 200, exp: 50 } },
+  { id: 'q_score70', name: '70점 달성', desc: '한 번에 70점 이상 받아보세요', type: 'bestScore', target: 70, reward: { money: 500, exp: 100 } },
+  { id: 'q_score90', name: '90점 달성', desc: '한 번에 90점 이상 받아보세요', type: 'bestScore', target: 90, reward: { money: 1500, exp: 300 } },
+  { id: 'q_score100', name: '전설의 감튀', desc: '100점 만점을 받아보세요', type: 'bestScore', target: 100, reward: { money: 5000, exp: 1000 } },
+  { id: 'q_cheese', name: '치즈 감튀 판매', desc: '치즈를 사용한 감튀를 판매하세요', type: 'usedSeasoning', target: 'cheese', reward: { money: 400, exp: 80 } },
+  { id: 'q_customer50', name: '손님 50명', desc: '총 50명의 손님을 응대하세요', type: 'totalCustomers', target: 50, reward: { money: 1000, exp: 200 } },
+  { id: 'q_customer200', name: '손님 200명', desc: '총 200명의 손님을 응대하세요', type: 'totalCustomers', target: 200, reward: { money: 4000, exp: 600 } },
+  { id: 'q_revenue10000', name: '매출 10,000원', desc: '누적 매출 10,000원을 달성하세요', type: 'totalRevenue', target: 10000, reward: { money: 800, exp: 150 } },
+  { id: 'q_revenue100000', name: '매출 100,000원', desc: '누적 매출 100,000원을 달성하세요', type: 'totalRevenue', target: 100000, reward: { money: 6000, exp: 800 } },
+  { id: 'q_unlock10', name: '새 재료 10개 해금', desc: '재료를 10개 해금하세요', type: 'unlockedIngredients', target: 10, reward: { money: 2000, exp: 400 } },
+  { id: 'q_combo20', name: '레시피 도감 20개', desc: '도감에 20개의 레시피를 등록하세요', type: 'recipesFound', target: 20, reward: { money: 2500, exp: 500 } },
+  { id: 'q_upgrade1', name: '첫 업그레이드', desc: '장비를 1개 이상 업그레이드하세요', type: 'totalUpgrades', target: 1, reward: { money: 600, exp: 120 } },
+];
+
+// ----------------------------------------------------------------
+// 업적 (퀘스트보다 장기적인 목표, 보상 없거나 명예 위주 + 소량 보상)
+// ----------------------------------------------------------------
+const ACHIEVEMENT_LIST = [
+  { id: 'a_fries100', name: '감튀 장인의 길', desc: '감튀 100개 제작', type: 'totalFries', target: 100, reward: { money: 1000, exp: 200 } },
+  { id: 'a_fries1000', name: '감튀 마스터', desc: '감튀 1000개 제작', type: 'totalFries', target: 1000, reward: { money: 10000, exp: 2000 } },
+  { id: 'a_perfect', name: '완벽주의자', desc: '100점 만점 5회 달성', type: 'perfectCount', target: 5, reward: { money: 5000, exp: 1000 } },
+  { id: 'a_level10', name: '성장하는 사장님', desc: '레벨 10 달성', type: 'level', target: 10, reward: { money: 2000, exp: 0 } },
+  { id: 'a_level30', name: '레전드 사장님', desc: '레벨 30 달성', type: 'level', target: 30, reward: { money: 15000, exp: 0 } },
+  { id: 'a_allIngredients', name: '재료 수집가', desc: '모든 재료 해금', type: 'unlockedIngredients', target: SEASONINGS.length + POTATOES.length + OILS.length - 3, reward: { money: 8000, exp: 1500 } },
+  { id: 'a_allUpgrades', name: '최고급 주방', desc: '모든 업그레이드 최고 레벨', type: 'maxUpgrades', target: UPGRADES.length, reward: { money: 12000, exp: 2000 } },
+  { id: 'a_dex_all', name: '도감 완성', desc: '레시피 도감 50개 등록', type: 'recipesFound', target: 50, reward: { money: 9000, exp: 1500 } },
+];
+
+// ----------------------------------------------------------------
+// 랜덤 이벤트
+// effect 함수는 main.js에서 컨텍스트와 함께 처리
+// ----------------------------------------------------------------
+const RANDOM_EVENTS = [
+  {
+    id: 'mukbang', name: '먹방 유튜버 방문', emoji: '🎥',
+    desc: '유명 유튜버가 매장을 방문했다! 잠시 매출이 2배가 된다.',
+    duration: 30000, effect: { type: 'revenueMultiplier', value: 2 }
+  },
+  {
+    id: 'rain', name: '비 오는 날', emoji: '🌧️',
+    desc: '비가 와서 손님이 줄어든다. 손님 등장 빈도가 줄어든다.',
+    duration: 30000, effect: { type: 'customerRate', value: 0.5 }
+  },
+  {
+    id: 'potatoSale', name: '감자 할인', emoji: '🥔',
+    desc: '감자 가격이 할인된다! 재료 해금 비용이 잠시 감소한다.',
+    duration: 30000, effect: { type: 'unlockDiscount', value: 0.5 }
+  },
+  {
+    id: 'oilPriceUp', name: '기름값 폭등', emoji: '📈',
+    desc: '기름값이 폭등해서 판매가가 잠시 낮아진다.',
+    duration: 20000, effect: { type: 'revenueMultiplier', value: 0.7 }
+  },
+  {
+    id: 'seagull', name: '갈매기가 감튀 훔쳐감', emoji: '🐦',
+    desc: '갈매기가 들이닥쳐 감튀 하나를 훔쳐갔다!',
+    duration: 0, effect: { type: 'instantPenalty', value: 100 }
+  },
+  {
+    id: 'alienVisit', name: '외계인 손님 등장', emoji: '🛸',
+    desc: '외계인 손님이 떼로 몰려온다! 외계인 손님 확률이 급증한다.',
+    duration: 25000, effect: { type: 'forceCustomer', value: 'alien' }
+  },
+  {
+    id: 'radioactiveBurst', name: '방사능 폭주', emoji: '☢️',
+    desc: '주방의 방사능 시즈닝이 폭주한다! 모든 점수가 불안정해진다.',
+    duration: 20000, effect: { type: 'scoreChaos', value: 15 }
+  },
+];
+
+// 등급 테이블
+function getGrade(score) {
+  if (score >= 100) return { label: '전설의 감튀', color: '#FFD700', tier: 7 };
+  if (score >= 90)  return { label: '장인의 감튀', color: '#FF8C42', tier: 6 };
+  if (score >= 80)  return { label: '훌륭함',       color: '#3DD68C', tier: 5 };
+  if (score >= 60)  return { label: '맛있음',       color: '#4FC3F7', tier: 4 };
+  if (score >= 40)  return { label: '평범함',       color: '#B0A89E', tier: 3 };
+  if (score >= 20)  return { label: '형편없음',     color: '#A0522D', tier: 2 };
+  return { label: '먹을 수 없음', color: '#7A7A7A', tier: 1 };
+}
+
+
+/* ===== state.js ===== */
+/* ============================================================
+   감튀 키우기 - 상태 관리 (State + Save/Load)
+   ============================================================ */
+
+const SAVE_KEY = 'gamtwi_save_v1';
+
+function createDefaultState() {
+  return {
+    money: 500,
+    level: 1,
+    exp: 0,
+    expToNext: 100,
+
+    // 해금된 재료 id 목록 (기본값 포함)
+    unlocked: {
+      potato: ['normal'],
+      oil: ['normal'],
+      seasoning: ['none'],
+    },
+
+    // 현재 선택 (조리 화면 기본값)
+    selection: {
+      potato: 'normal',
+      oil: 'normal',
+      seasoning: 'none',
+      salt: 50,      // 0~100
+      fryTime: 50,   // 0~100 (50이 최적)
+    },
+
+    // 통계
+    stats: {
+      totalFries: 0,
+      totalCustomers: 0,
+      totalRevenue: 0,
+      bestScore: 0,
+      perfectCount: 0,
+      totalUpgrades: 0,
+      scoreSum: 0, // 평균 계산용
+      gradeCounts: {}, // grade label -> count
+    },
+
+    // 업그레이드 레벨
+    upgrades: {
+      fryer: 0, fridge: 0, saltDispenser: 0, autoFryer: 0, cutter: 0, aiChef: 0
+    },
+
+    // 도감 (발견한 조합들의 key 배열)
+    recipeDex: [],
+
+    // 퀘스트 진행 / 완료 상태
+    quests: {
+      completed: [],
+      claimed: [],
+    },
+
+    // 업적
+    achievements: {
+      unlocked: [],
+      claimed: [],
+    },
+
+    // 일일 보상
+    daily: {
+      lastClaimDate: null, // YYYY-MM-DD
+      streak: 0,
+    },
+
+    // 설정
+    settings: {
+      sfx: true,
+      bgm: true,
+    },
+
+    // 메타
+    meta: {
+      createdAt: Date.now(),
+      lastSavedAt: Date.now(),
+    }
+  };
+}
+
+function deepMerge(target, source) {
+  for (const key in source) {
+    if (
+      source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])
+    ) {
+      if (!target[key] || typeof target[key] !== 'object') target[key] = {};
+      deepMerge(target[key], source[key]);
+    } else if (target[key] === undefined) {
+      target[key] = source[key];
+    }
+  }
+  return target;
+}
+
+const GameState = {
+  data: null,
+
+  load() {
+    let loaded = null;
+    try {
+      const raw = localStorage.getItem(SAVE_KEY);
+      if (raw) loaded = JSON.parse(raw);
+    } catch (e) {
+      console.warn('저장 데이터 로드 실패, 새 게임 시작', e);
+    }
+    const def = createDefaultState();
+    this.data = loaded ? deepMerge(loaded, def) : def;
+    return this.data;
+  },
+
+  save() {
+    try {
+      this.data.meta.lastSavedAt = Date.now();
+      localStorage.setItem(SAVE_KEY, JSON.stringify(this.data));
+      return true;
+    } catch (e) {
+      console.warn('저장 실패', e);
+      return false;
+    }
+  },
+
+  reset() {
+    try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
+    this.data = createDefaultState();
+    this.save();
+  },
+
+  // 디바운스 저장 (연속 호출 시 마지막만 저장)
+  _saveTimer: null,
+  saveSoon() {
+    clearTimeout(this._saveTimer);
+    this._saveTimer = setTimeout(() => this.save(), 400);
+  }
+};
+
+
+/* ===== cookEngine.js ===== */
+/* ============================================================
+   감튀 키우기 - 조리/점수 계산 엔진
+   ============================================================ */
+
+const CookEngine = {
+  // 업그레이드 보너스 계산
+  getUpgradeBonus(state) {
+    const u = state.upgrades;
+    return {
+      potato: u.fridge * 3 + u.aiChef * 4,
+      salt: u.saltDispenser * 3 + u.aiChef * 4,
+      oil: u.autoFryer * 2 + u.aiChef * 4, // 기름 상태는 autoFryer(전체안정성)로 일부 보정
+      fryTime: u.fryer * 3 + u.aiChef * 4,
+      combo: u.cutter * 3 + u.aiChef * 4,
+      flat: u.autoFryer * 2, // 전체 점수 약간씩
+    };
+  },
+
+  // 감자 품질 점수 (20점 만점)
+  scorePotato(potatoId, bonus) {
+    const p = POTATOES.find(x => x.id === potatoId) || POTATOES[0];
+    const base = (p.quality / 100) * 20;
+    return clamp(base + bonus, 0, 20);
+  },
+
+  // 소금 비율 점수 (20점 만점) - 50이 최적
+  scoreSalt(saltValue, bonus) {
+    const diff = Math.abs(saltValue - 50);
+    const base = 20 - (diff / 50) * 20;
+    return clamp(base + bonus, 0, 20);
+  },
+
+  // 기름 상태 점수 (20점 만점)
+  scoreOil(oilId, bonus) {
+    const o = OILS.find(x => x.id === oilId) || OILS[0];
+    const base = (o.quality / 100) * 20;
+    return clamp(base + bonus, 0, 20);
+  },
+
+  // 튀김 시간 점수 (20점 만점) - 50이 최적(바삭함)
+  scoreFryTime(fryTimeValue, bonus) {
+    const diff = Math.abs(fryTimeValue - 50);
+    const base = 20 - (diff / 50) * 20;
+    return clamp(base + bonus, 0, 20);
+  },
+
+  // 재료 조합 점수 (20점 만점) - 시즈닝 티어와 감자/기름 궁합
+  scoreCombo(potatoId, oilId, seasoningId, bonus) {
+    const s = SEASONINGS.find(x => x.id === seasoningId) || SEASONINGS[0];
+    let base = 8; // 기본 베이스
+    base += s.tier * 2.5; // 시즈닝 티어가 높을수록 조합 가능성 위해 가산 (최대 tier4*2.5=10)
+    // 고급 감자/기름과 매칭되면 추가 보너스
+    const p = POTATOES.find(x => x.id === potatoId);
+    const o = OILS.find(x => x.id === oilId);
+    if (p && p.quality >= 90) base += 2;
+    if (o && o.quality >= 90) base += 2;
+    return clamp(base + bonus, 0, 20);
+  },
+
+  // 전체 점수 계산
+  calculateScore(state) {
+    const sel = state.selection;
+    const bonus = this.getUpgradeBonus(state);
+
+    let potatoScore = this.scorePotato(sel.potato, bonus.potato + bonus.flat * 0.25);
+    let saltScore = this.scoreSalt(sel.salt, bonus.salt + bonus.flat * 0.25);
+    let oilScore = this.scoreOil(sel.oil, bonus.oil + bonus.flat * 0.25);
+    let fryScore = this.scoreFryTime(sel.fryTime, bonus.fryTime + bonus.flat * 0.25);
+    let comboScore = this.scoreCombo(sel.potato, sel.oil, sel.seasoning, bonus.combo);
+
+    let total = potatoScore + saltScore + oilScore + fryScore + comboScore;
+    total = clamp(Math.round(total * 10) / 10, 0, 100);
+
+    return {
+      potatoScore: round1(potatoScore),
+      saltScore: round1(saltScore),
+      oilScore: round1(oilScore),
+      fryScore: round1(fryScore),
+      comboScore: round1(comboScore),
+      total,
+      grade: getGrade(total),
+    };
+  },
+
+  // 판매가 계산 (점수 기반)
+  calculatePrice(score) {
+    // 0점=300원, 100점=5000원 정도의 스케일, 비선형 가중치
+    const base = 300 + Math.pow(score / 100, 1.6) * 4700;
+    return Math.round(base / 10) * 10;
+  },
+
+  // 손님 만족도 계산 (0~100) + 선호 재료 보너스 여부
+  calculateSatisfaction(score, customerType, seasoningId) {
+    let satisfaction = score;
+    let bonus = false;
+    if (customerType.wantSeasoning.includes(seasoningId)) {
+      satisfaction = clamp(satisfaction + 20, 0, 100);
+      bonus = true;
+    }
+    return { satisfaction, bonus };
+  },
+
+  // 도감 키 생성 (감자+기름+시즈닝 조합)
+  recipeKey(potatoId, oilId, seasoningId) {
+    return `${potatoId}|${oilId}|${seasoningId}`;
+  }
+};
+
+function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+function round1(v) { return Math.round(v * 10) / 10; }
+
+
+/* ===== progression.js ===== */
+/* ============================================================
+   감튀 키우기 - 진행 시스템 (레벨/경험치/퀘스트/업적)
+   ============================================================ */
+
+const Progression = {
+  addExp(state, amount) {
+    state.exp += amount;
+    let leveledUp = false;
+    while (state.exp >= state.expToNext) {
+      state.exp -= state.expToNext;
+      state.level += 1;
+      state.expToNext = Math.round(state.expToNext * 1.25 + 20);
+      leveledUp = true;
+    }
+    return leveledUp;
+  },
+
+  // 통계값 읽기 helper (퀘스트/업적 type에 대응)
+  getStatValue(state, type) {
+    switch (type) {
+      case 'totalFries': return state.stats.totalFries;
+      case 'bestScore': return state.stats.bestScore;
+      case 'totalCustomers': return state.stats.totalCustomers;
+      case 'totalRevenue': return state.stats.totalRevenue;
+      case 'totalUpgrades': return state.stats.totalUpgrades;
+      case 'perfectCount': return state.stats.perfectCount;
+      case 'level': return state.level;
+      case 'unlockedIngredients': return (
+        state.unlocked.potato.length + state.unlocked.oil.length + state.unlocked.seasoning.length - 3
+      );
+      case 'recipesFound': return state.recipeDex.length;
+      case 'maxUpgrades': {
+        let count = 0;
+        UPGRADES.forEach(u => { if (state.upgrades[u.id] >= u.maxLevel) count++; });
+        return count;
+      }
+      case 'usedSeasoning': return null; // flag형은 별도 체크
+      default: return 0;
+    }
+  },
+
+  // 퀘스트 완료 체크 (새로 완료된 퀘스트 목록 반환)
+  checkQuests(state, context) {
+    const newlyCompleted = [];
+    QUEST_LIST.forEach(q => {
+      if (state.quests.completed.includes(q.id)) return;
+      let done = false;
+      if (q.type === 'usedSeasoning') {
+        done = context && context.usedSeasoning === q.target;
+      } else {
+        const val = this.getStatValue(state, q.type);
+        done = val >= q.target;
+      }
+      if (done) {
+        state.quests.completed.push(q.id);
+        newlyCompleted.push(q);
+      }
+    });
+    return newlyCompleted;
+  },
+
+  // 업적 체크
+  checkAchievements(state) {
+    const newlyUnlocked = [];
+    ACHIEVEMENT_LIST.forEach(a => {
+      if (state.achievements.unlocked.includes(a.id)) return;
+      const val = this.getStatValue(state, a.type);
+      if (val >= a.target) {
+        state.achievements.unlocked.push(a.id);
+        newlyUnlocked.push(a);
+      }
+    });
+    return newlyUnlocked;
+  },
+
+  // 퀘스트/업적 보상 수령
+  claimQuestReward(state, questId) {
+    const q = QUEST_LIST.find(x => x.id === questId);
+    if (!q) return null;
+    if (!state.quests.completed.includes(questId)) return null;
+    if (state.quests.claimed.includes(questId)) return null;
+    state.quests.claimed.push(questId);
+    state.money += q.reward.money;
+    this.addExp(state, q.reward.exp);
+    return q.reward;
+  },
+
+  claimAchievementReward(state, achId) {
+    const a = ACHIEVEMENT_LIST.find(x => x.id === achId);
+    if (!a) return null;
+    if (!state.achievements.unlocked.includes(achId)) return null;
+    if (state.achievements.claimed.includes(achId)) return null;
+    state.achievements.claimed.push(achId);
+    state.money += a.reward.money;
+    this.addExp(state, a.reward.exp);
+    return a.reward;
+  },
+
+  // 일일 보상 체크/수령
+  getTodayStr() {
+    const d = new Date();
+    return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+  },
+
+  canClaimDaily(state) {
+    return state.daily.lastClaimDate !== this.getTodayStr();
+  },
+
+  claimDaily(state) {
+    if (!this.canClaimDaily(state)) return null;
+    const today = this.getTodayStr();
+    // 연속 여부 체크 (단순화: 마지막 날짜와 비교 없이 streak 증가, 끊기면 1로)
+    const prevDate = state.daily.lastClaimDate;
+    let streak = state.daily.streak || 0;
+    if (prevDate) {
+      const prev = new Date(prevDate.replace(/-/g, '/'));
+      const diffDays = Math.round((new Date(today.replace(/-/g,'/')) - prev) / 86400000);
+      streak = diffDays === 1 ? streak + 1 : 1;
+    } else {
+      streak = 1;
+    }
+    state.daily.lastClaimDate = today;
+    state.daily.streak = streak;
+
+    const baseMoney = 300;
+    const bonusMoney = Math.min(streak, 7) * 150;
+    const reward = { money: baseMoney + bonusMoney, exp: 30 + Math.min(streak, 7) * 10, streak };
+    state.money += reward.money;
+    this.addExp(state, reward.exp);
+    return reward;
+  }
+};
+
+
+/* ===== eventManager.js ===== */
+/* ============================================================
+   감튀 키우기 - 랜덤 이벤트 매니저
+   ============================================================ */
+
+const EventManager = {
+  activeEvent: null,
+  activeUntil: 0,
+  timerHandle: null,
+  onTrigger: null, // UI 콜백
+  onEnd: null,
+
+  // 일정 간격으로 랜덤 이벤트 발생 시도
+  startLoop() {
+    this.scheduleNext();
+  },
+
+  scheduleNext() {
+    const delay = 45000 + Math.random() * 45000; // 45~90초
+    this.timerHandle = setTimeout(() => {
+      this.tryTrigger();
+      this.scheduleNext();
+    }, delay);
+  },
+
+  tryTrigger() {
+    if (this.activeEvent) return; // 이미 이벤트 중이면 스킵
+    const ev = RANDOM_EVENTS[Math.floor(Math.random() * RANDOM_EVENTS.length)];
+    this.trigger(ev);
+  },
+
+  trigger(ev) {
+    this.activeEvent = ev;
+    this.activeUntil = Date.now() + (ev.duration || 0);
+    if (this.onTrigger) this.onTrigger(ev);
+
+    if (ev.duration > 0) {
+      clearTimeout(this._endHandle);
+      this._endHandle = setTimeout(() => {
+        this.activeEvent = null;
+        if (this.onEnd) this.onEnd(ev);
+      }, ev.duration);
+    } else {
+      // 즉발성 이벤트는 바로 종료 처리
+      setTimeout(() => {
+        this.activeEvent = null;
+      }, 2500);
+    }
+  },
+
+  getRevenueMultiplier() {
+    if (this.activeEvent && this.activeEvent.effect.type === 'revenueMultiplier') {
+      return this.activeEvent.effect.value;
+    }
+    return 1;
+  },
+
+  getCustomerRateMultiplier() {
+    if (this.activeEvent && this.activeEvent.effect.type === 'customerRate') {
+      return this.activeEvent.effect.value;
+    }
+    return 1;
+  },
+
+  getForcedCustomerType() {
+    if (this.activeEvent && this.activeEvent.effect.type === 'forceCustomer') {
+      return this.activeEvent.effect.value;
+    }
+    return null;
+  },
+
+  getScoreChaos() {
+    if (this.activeEvent && this.activeEvent.effect.type === 'scoreChaos') {
+      return this.activeEvent.effect.value;
+    }
+    return 0;
+  },
+
+  getUnlockDiscount() {
+    if (this.activeEvent && this.activeEvent.effect.type === 'unlockDiscount') {
+      return this.activeEvent.effect.value;
+    }
+    return 1;
+  },
+
+  stop() {
+    clearTimeout(this.timerHandle);
+    clearTimeout(this._endHandle);
+    this.activeEvent = null;
+  }
+};
+
+
+/* ===== sound.js ===== */
+/* ============================================================
+   감튀 키우기 - 사운드 시스템 (Web Audio API 합성, 외부 파일 불필요)
+   ============================================================ */
+
+const SoundSystem = {
+  ctx: null,
+  bgmGain: null,
+  bgmNodes: [],
+  bgmPlaying: false,
+  sfxEnabled: true,
+  bgmEnabled: true,
+
+  init() {
+    try {
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    } catch (e) {
+      console.warn('Web Audio 미지원', e);
+    }
+  },
+
+  ensureContext() {
+    if (!this.ctx) this.init();
+    if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+  },
+
+  setSfxEnabled(v) { this.sfxEnabled = v; },
+  setBgmEnabled(v) {
+    this.bgmEnabled = v;
+    if (v) this.startBgm(); else this.stopBgm();
+  },
+
+  // 간단한 비프음 효과 생성
+  beep(freq, duration, type = 'sine', volume = 0.15, delay = 0) {
+    if (!this.sfxEnabled) return;
+    this.ensureContext();
+    if (!this.ctx) return;
+    const t0 = this.ctx.currentTime + delay;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, t0);
+    gain.gain.setValueAtTime(0, t0);
+    gain.gain.linearRampToValueAtTime(volume, t0 + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, t0 + duration);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(t0);
+    osc.stop(t0 + duration + 0.05);
+  },
+
+  playClick() { this.beep(600, 0.08, 'square', 0.08); },
+  playCook() {
+    this.beep(300, 0.15, 'sawtooth', 0.06);
+    this.beep(450, 0.15, 'sawtooth', 0.05, 0.08);
+  },
+  playSuccess(score) {
+    if (score >= 90) {
+      [523, 659, 784, 1046].forEach((f, i) => this.beep(f, 0.25, 'triangle', 0.12, i * 0.09));
+    } else if (score >= 60) {
+      [523, 659, 784].forEach((f, i) => this.beep(f, 0.2, 'triangle', 0.1, i * 0.08));
+    } else if (score >= 40) {
+      this.beep(440, 0.2, 'triangle', 0.08);
+    } else {
+      this.beep(220, 0.3, 'sawtooth', 0.08);
+      this.beep(180, 0.3, 'sawtooth', 0.06, 0.1);
+    }
+  },
+  playCoin() {
+    this.beep(880, 0.1, 'square', 0.07);
+    this.beep(1320, 0.12, 'square', 0.06, 0.06);
+  },
+  playLevelUp() {
+    [392, 523, 659, 784, 1046].forEach((f, i) => this.beep(f, 0.2, 'triangle', 0.1, i * 0.07));
+  },
+  playUnlock() {
+    this.beep(660, 0.12, 'sine', 0.1);
+    this.beep(990, 0.15, 'sine', 0.1, 0.08);
+  },
+  playError() {
+    this.beep(150, 0.25, 'sawtooth', 0.08);
+  },
+  playEvent() {
+    this.beep(700, 0.1, 'square', 0.08);
+    this.beep(500, 0.1, 'square', 0.08, 0.1);
+    this.beep(700, 0.1, 'square', 0.08, 0.2);
+  },
+
+  // 잔잔한 루프 BGM (오실레이터 기반의 단순 멜로디 루프)
+  startBgm() {
+    if (!this.bgmEnabled || this.bgmPlaying) return;
+    this.ensureContext();
+    if (!this.ctx) return;
+    this.bgmPlaying = true;
+    this._bgmStep = 0;
+    const melody = [392, 440, 523, 440, 392, 349, 392, 523, 587, 523, 440, 392];
+    const playStep = () => {
+      if (!this.bgmPlaying) return;
+      const freq = melody[this._bgmStep % melody.length];
+      this.beep(freq, 0.7, 'sine', 0.035);
+      this._bgmStep++;
+      this._bgmTimer = setTimeout(playStep, 600);
+    };
+    playStep();
+  },
+
+  stopBgm() {
+    this.bgmPlaying = false;
+    clearTimeout(this._bgmTimer);
+  }
+};
+
+
+/* ===== ui.js ===== */
+/* ============================================================
+   감튀 키우기 - UI 렌더링 헬퍼
+   ============================================================ */
+
+const UI = {
+  showScreen(name) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const target = document.getElementById('screen-' + name);
+    if (target) target.classList.add('active');
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.screen === name);
+    });
+  },
+
+  showResult() {
+    document.getElementById('screen-result').classList.add('active');
+  },
+  hideResult() {
+    document.getElementById('screen-result').classList.remove('active');
+  },
+
+  switchSubtab(container, tabName) {
+    container.querySelectorAll('.subtab').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.subtab === tabName);
+    });
+    container.querySelectorAll('.subtab-panel').forEach(panel => {
+      panel.classList.toggle('active', panel.id === 'panel-' + tabName);
+    });
+  },
+
+  toast(message, emoji = '') {
+    const area = document.getElementById('toastArea');
+    const el = document.createElement('div');
+    el.className = 'toast';
+    el.textContent = emoji ? `${emoji} ${message}` : message;
+    area.appendChild(el);
+    setTimeout(() => el.remove(), 2600);
+  },
+
+  formatMoney(v) {
+    return Math.round(v).toLocaleString('ko-KR');
+  },
+
+  updateTopbar(state) {
+    document.getElementById('levelBadge').textContent = `Lv.${state.level}`;
+    document.getElementById('moneyValue').textContent = this.formatMoney(state.money);
+    const pct = clamp((state.exp / state.expToNext) * 100, 0, 100);
+    document.getElementById('expFill').style.width = pct + '%';
+  },
+
+  updateQuickStats(state) {
+    document.getElementById('statTotalFries').textContent = state.stats.totalFries;
+    document.getElementById('statBestScore').textContent = state.stats.bestScore;
+    document.getElementById('statCustomers').textContent = state.stats.totalCustomers;
+  },
+
+  // 재료 칩 렌더 (조리 화면)
+  renderChips(containerId, items, unlockedIds, selectedId, onSelect) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    items.forEach(item => {
+      const locked = !unlockedIds.includes(item.id);
+      const chip = document.createElement('button');
+      chip.className = 'chip' + (item.id === selectedId ? ' selected' : '') + (locked ? ' locked' : '');
+      chip.innerHTML = `<span class="chip-emoji">${locked ? '🔒' : item.emoji}</span><span>${item.name}</span>`;
+      if (!locked) {
+        chip.addEventListener('click', () => onSelect(item.id));
+      } else {
+        chip.addEventListener('click', () => UI.toast('상점에서 먼저 해금하세요', '🔒'));
+      }
+      container.appendChild(chip);
+    });
+  },
+
+  renderScoreBreakdown(result) {
+    const rows = [
+      { label: '감자 품질', value: result.potatoScore },
+      { label: '소금 비율', value: result.saltScore },
+      { label: '기름 상태', value: result.oilScore },
+      { label: '튀김 시간', value: result.fryScore },
+      { label: '재료 조합', value: result.comboScore },
+    ];
+    const container = document.getElementById('scoreBreakdown');
+    container.innerHTML = rows.map(r => `
+      <div class="breakdown-row">
+        <span class="breakdown-label">${r.label}</span>
+        <div class="breakdown-bar-wrap"><div class="breakdown-bar" style="width:${(r.value/20)*100}%"></div></div>
+        <span class="breakdown-num">${r.value}</span>
+      </div>
+    `).join('');
+  }
+};
+
+// clamp()는 js/cookEngine.js 에서 전역으로 정의됨 (로드 순서: cookEngine.js가 ui.js보다 먼저 로드)
+
+
+/* ===== main.js ===== */
+/* ============================================================
+   감튀 키우기 - 메인 게임 로직
+   ============================================================ */
+
+let state = null;
+let currentCustomer = null;
+let pendingResult = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+  state = GameState.load();
+  SoundSystem.setSfxEnabled(state.settings.sfx);
+  SoundSystem.setBgmEnabled(state.settings.bgm);
+
+  initTabBar();
+  initShopScreen();
+  initCookScreen();
+  initResultScreen();
+  initQuestScreen();
+  initStoreScreen();
+  initSettingsScreen();
+  initEventManager();
+
+  renderAll();
+
+  // 첫 인터랙션 시 오디오 컨텍스트 활성화 (브라우저 정책 대응)
+  document.body.addEventListener('click', () => SoundSystem.ensureContext(), { once: true });
+  if (state.settings.bgm) {
+    document.body.addEventListener('click', () => SoundSystem.startBgm(), { once: true });
+  }
+
+  // 손님 생성 루프 시작
+  scheduleNextCustomer();
+});
+
+// ----------------------------------------------------------------
+// 탭바
+// ----------------------------------------------------------------
+function initTabBar() {
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      SoundSystem.playClick();
+      UI.showScreen(btn.dataset.screen);
+      if (btn.dataset.screen === 'dex') renderDex();
+      if (btn.dataset.screen === 'quest') renderQuests();
+      if (btn.dataset.screen === 'store') renderStore();
+      if (btn.dataset.screen === 'stats') renderStats();
+    });
+  });
+}
+
+function renderAll() {
+  UI.updateTopbar(state);
+  UI.updateQuickStats(state);
+  renderCookOptions();
+}
+
+// ----------------------------------------------------------------
+// 가게(홈) 화면
+// ----------------------------------------------------------------
+function initShopScreen() {
+  document.getElementById('goCookBtn').addEventListener('click', () => {
+    SoundSystem.playClick();
+    UI.showScreen('cook');
+  });
+}
+
+function scheduleNextCustomer() {
+  const baseDelay = 8000 + Math.random() * 10000; // 8~18초
+  const rateMul = EventManager.getCustomerRateMultiplier();
+  const delay = baseDelay / rateMul;
+  setTimeout(() => {
+    spawnCustomer();
+    scheduleNextCustomer();
+  }, delay);
+}
+
+function spawnCustomer() {
+  if (currentCustomer) return; // 이미 손님이 있으면 스킵
+  const forced = EventManager.getForcedCustomerType();
+  let type;
+  if (forced && Math.random() < 0.7) {
+    type = CUSTOMER_TYPES.find(c => c.id === forced) || randomCustomerType();
+  } else {
+    type = randomCustomerType();
+  }
+  currentCustomer = type;
+  renderCustomerCard(type);
+}
+
+function randomCustomerType() {
+  return CUSTOMER_TYPES[Math.floor(Math.random() * CUSTOMER_TYPES.length)];
+}
+
+function renderCustomerCard(type) {
+  const area = document.getElementById('customerArea');
+  const wantNames = type.wantSeasoning
+    .map(id => (SEASONINGS.find(s => s.id === id) || {}).name)
+    .filter(Boolean).join(', ');
+  area.innerHTML = `
+    <div class="customer-card-emoji">${type.emoji}</div>
+    <div class="customer-card-name">${type.name} 손님</div>
+    <div class="customer-card-line">"${type.line}"</div>
+    <div class="customer-card-want">선호: ${wantNames}</div>
+  `;
+  area.classList.add('has-customer');
+}
+
+function clearCustomerCard() {
+  const area = document.getElementById('customerArea');
+  area.classList.remove('has-customer');
+  area.innerHTML = `
+    <div class="customer-placeholder">
+      <div class="customer-emoji">🏪</div>
+      <p class="customer-hint">손님을 기다리는 중...</p>
+    </div>
+  `;
+}
+
+// ----------------------------------------------------------------
+// 조리 화면
+// ----------------------------------------------------------------
+function initCookScreen() {
+  document.getElementById('saltSlider').addEventListener('input', (e) => {
+    state.selection.salt = Number(e.target.value);
+    document.getElementById('saltValueLabel').textContent = state.selection.salt;
+  });
+  document.getElementById('frySlider').addEventListener('input', (e) => {
+    state.selection.fryTime = Number(e.target.value);
+    document.getElementById('fryValueLabel').textContent = state.selection.fryTime;
+  });
+  document.getElementById('makeFryBtn').addEventListener('click', onMakeFry);
+}
+
+function renderCookOptions() {
+  UI.renderChips('potatoChips', POTATOES, state.unlocked.potato, state.selection.potato, (id) => {
+    state.selection.potato = id;
+    SoundSystem.playClick();
+    renderCookOptions();
+  });
+  UI.renderChips('oilChips', OILS, state.unlocked.oil, state.selection.oil, (id) => {
+    state.selection.oil = id;
+    SoundSystem.playClick();
+    renderCookOptions();
+  });
+  UI.renderChips('seasoningChips', SEASONINGS, state.unlocked.seasoning, state.selection.seasoning, (id) => {
+    state.selection.seasoning = id;
+    SoundSystem.playClick();
+    renderCookOptions();
+  });
+  document.getElementById('saltSlider').value = state.selection.salt;
+  document.getElementById('saltValueLabel').textContent = state.selection.salt;
+  document.getElementById('frySlider').value = state.selection.fryTime;
+  document.getElementById('fryValueLabel').textContent = state.selection.fryTime;
+}
+
+function onMakeFry() {
+  SoundSystem.playCook();
+  const btn = document.getElementById('makeFryBtn');
+  btn.disabled = true;
+  btn.textContent = '🔥 튀기는 중...';
+
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.textContent = '🔥 튀기기!';
+    processFryResult();
+  }, 900);
+}
+
+function processFryResult() {
+  let result = CookEngine.calculateScore(state);
+
+  // 방사능 폭주 이벤트: 점수를 무작위로 흔든다
+  const chaos = EventManager.getScoreChaos();
+  if (chaos > 0) {
+    const delta = (Math.random() * 2 - 1) * chaos;
+    result.total = clamp(round1(result.total + delta), 0, 100);
+    result.grade = getGrade(result.total);
+  }
+
+  const sel = state.selection;
+
+  // 통계 업데이트
+  state.stats.totalFries += 1;
+  state.stats.scoreSum += result.total;
+  if (result.total > state.stats.bestScore) state.stats.bestScore = result.total;
+  if (result.total >= 100) state.stats.perfectCount += 1;
+  const gradeLabel = result.grade.label;
+  state.stats.gradeCounts[gradeLabel] = (state.stats.gradeCounts[gradeLabel] || 0) + 1;
+
+  // 도감 등록
+  const key = CookEngine.recipeKey(sel.potato, sel.oil, sel.seasoning);
+  let newRecipe = false;
+  if (!state.recipeDex.some(r => r.key === key)) {
+    state.recipeDex.push({ key, potato: sel.potato, oil: sel.oil, seasoning: sel.seasoning, score: result.total, foundAt: Date.now() });
+    newRecipe = true;
+  } else {
+    // 더 높은 점수로 갱신
+    const rec = state.recipeDex.find(r => r.key === key);
+    if (result.total > rec.score) rec.score = result.total;
+  }
+
+  // 손님 처리 및 판매
+  let earned = 0;
+  let satisfactionInfo = null;
+  const customer = currentCustomer;
+  if (customer) {
+    const basePrice = CookEngine.calculatePrice(result.total);
+    const revMul = EventManager.getRevenueMultiplier();
+    earned = Math.round(basePrice * customer.payMultiplier * revMul);
+    satisfactionInfo = CookEngine.calculateSatisfaction(result.total, customer, sel.seasoning);
+    if (satisfactionInfo.bonus) earned = Math.round(earned * 1.3);
+    state.stats.totalCustomers += 1;
+    state.stats.totalRevenue += earned;
+    state.money += earned;
+    currentCustomer = null;
+    clearCustomerCard();
+  } else {
+    // 손님 없이 만든 경우 절반 가격으로 셀프 판매
+    const basePrice = CookEngine.calculatePrice(result.total);
+    earned = Math.round(basePrice * 0.5);
+    state.stats.totalRevenue += earned;
+    state.money += earned;
+  }
+
+  // 경험치
+  const expGain = Math.round(10 + result.total * 0.8);
+  const leveledUp = Progression.addExp(state, expGain);
+
+  // 퀘스트/업적 체크
+  const completedQuests = Progression.checkQuests(state, { usedSeasoning: sel.seasoning });
+  const unlockedAchievements = Progression.checkAchievements(state);
+
+  GameState.saveSoon();
+
+  pendingResult = { result, earned, customer, satisfactionInfo, newRecipe, leveledUp, completedQuests, unlockedAchievements };
+  showResultScreen(pendingResult);
+
+  SoundSystem.playSuccess(result.total);
+}
+
+function round1(v) { return Math.round(v * 10) / 10; }
+
+// ----------------------------------------------------------------
+// 결과 화면
+// ----------------------------------------------------------------
+function initResultScreen() {
+  document.getElementById('resultContinueBtn').addEventListener('click', () => {
+    SoundSystem.playClick();
+    UI.hideResult();
+    finishResultFlow();
+  });
+}
+
+function showResultScreen(data) {
+  const { result, earned, customer, satisfactionInfo, newRecipe } = data;
+  const grade = result.grade;
+
+  document.getElementById('resultFryEmoji').textContent = gradeEmoji(grade.tier);
+  document.getElementById('resultGrade').textContent = grade.label + (newRecipe ? ' 🆕' : '');
+  document.getElementById('resultGrade').style.color = grade.color;
+  document.getElementById('resultScore').innerHTML = `${result.total}<span class="score-max">/100</span>`;
+  UI.renderScoreBreakdown(result);
+
+  const customerBox = document.getElementById('resultCustomer');
+  if (customer) {
+    customerBox.hidden = false;
+    document.getElementById('rcEmoji').textContent = customer.emoji;
+    document.getElementById('rcName').textContent = customer.name + ' 손님';
+    document.getElementById('rcLine').textContent = satisfactionLine(satisfactionInfo.satisfaction);
+    const bonusEl = document.getElementById('rcBonus');
+    bonusEl.hidden = !satisfactionInfo.bonus;
+  } else {
+    customerBox.hidden = true;
+  }
+
+  document.getElementById('resultEarn').textContent = `+${UI.formatMoney(earned)}원`;
+
+  UI.showResult();
+}
+
+function gradeEmoji(tier) {
+  const map = { 1: '🤢', 2: '😕', 3: '😐', 4: '😋', 5: '😍', 6: '🤩', 7: '👑' };
+  return map[tier] || '🍟';
+}
+
+function satisfactionLine(satisfaction) {
+  if (satisfaction >= 90) return '"완벽해요! 인생 감튀예요!"';
+  if (satisfaction >= 70) return '"정말 맛있어요!"';
+  if (satisfaction >= 50) return '"먹을만 하네요."';
+  if (satisfaction >= 30) return '"음... 그냥 그래요."';
+  return '"이건 좀... 별로예요."';
+}
+
+function finishResultFlow() {
+  if (!pendingResult) return;
+  const { leveledUp, completedQuests, unlockedAchievements } = pendingResult;
+
+  if (leveledUp) {
+    SoundSystem.playLevelUp();
+    UI.toast(`레벨 업! Lv.${state.level}`, '🎉');
+  }
+  completedQuests.forEach(q => UI.toast(`퀘스트 완료: ${q.name}`, '📋'));
+  unlockedAchievements.forEach(a => UI.toast(`업적 달성: ${a.name}`, '🏆'));
+
+  renderAll();
+  pendingResult = null;
+}
+
+// ----------------------------------------------------------------
+// 퀘스트 / 업적 / 일일보상 화면
+// ----------------------------------------------------------------
+function initQuestScreen() {
+  const screen = document.getElementById('screen-quest');
+  screen.querySelectorAll('.subtab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      SoundSystem.playClick();
+      UI.switchSubtab(screen, btn.dataset.subtab);
+    });
+  });
+  document.getElementById('dailyClaimBtn').addEventListener('click', onClaimDaily);
+}
+
+function renderQuests() {
+  const questList = document.getElementById('questList');
+  questList.innerHTML = QUEST_LIST.map(q => renderQuestItem(q, 'quest')).join('');
+  questList.querySelectorAll('.quest-claim-btn').forEach(btn => {
+    btn.addEventListener('click', () => onClaimQuest(btn.dataset.id));
+  });
+
+  const achList = document.getElementById('achievementList');
+  achList.innerHTML = ACHIEVEMENT_LIST.map(a => renderQuestItem(a, 'achievement')).join('');
+  achList.querySelectorAll('.quest-claim-btn').forEach(btn => {
+    btn.addEventListener('click', () => onClaimAchievement(btn.dataset.id));
+  });
+
+  renderDailyPanel();
+}
+
+function renderQuestItem(item, kind) {
+  const isQuest = kind === 'quest';
+  const completedList = isQuest ? state.quests.completed : state.achievements.unlocked;
+  const claimedList = isQuest ? state.quests.claimed : state.achievements.claimed;
+  const done = completedList.includes(item.id);
+  const claimed = claimedList.includes(item.id);
+
+  let progressVal = 0;
+  let targetVal = item.target;
+  if (item.type === 'usedSeasoning') {
+    progressVal = done ? 1 : 0;
+    targetVal = 1;
+  } else {
+    progressVal = Math.min(Progression.getStatValue(state, item.type), targetVal);
+  }
+  const pct = targetVal ? Math.min(100, (progressVal / targetVal) * 100) : 0;
+
+  const icon = isQuest ? '📋' : '🏆';
+  let actionHtml;
+  if (claimed) {
+    actionHtml = `<span class="quest-claimed-badge">수령완료 ✓</span>`;
+  } else if (done) {
+    actionHtml = `<button class="quest-claim-btn" data-id="${item.id}">받기</button>`;
+  } else {
+    actionHtml = `<span class="quest-claimed-badge" style="color:#B6A78F;">${typeof progressVal === 'number' && targetVal > 1 ? progressVal + '/' + targetVal : '진행중'}</span>`;
+  }
+
+  return `
+    <div class="quest-item ${done ? 'done' : ''}">
+      <div class="quest-icon">${icon}</div>
+      <div class="quest-info">
+        <div class="quest-name">${item.name}</div>
+        <div class="quest-desc">${item.desc}</div>
+        <div class="quest-progress-bar"><div class="quest-progress-fill" style="width:${pct}%"></div></div>
+        <div class="quest-reward">💰 ${item.reward.money}원 ${item.reward.exp ? '· ✨ ' + item.reward.exp + 'EXP' : ''}</div>
+      </div>
+      ${actionHtml}
+    </div>
+  `;
+}
+
+function onClaimQuest(id) {
+  const reward = Progression.claimQuestReward(state, id);
+  if (reward) {
+    SoundSystem.playCoin();
+    UI.toast(`+${reward.money}원 받았어요!`, '🎁');
+    GameState.saveSoon();
+    renderAll();
+    renderQuests();
+  }
+}
+
+function onClaimAchievement(id) {
+  const reward = Progression.claimAchievementReward(state, id);
+  if (reward) {
+    SoundSystem.playCoin();
+    UI.toast(`+${reward.money}원 받았어요!`, '🏆');
+    GameState.saveSoon();
+    renderAll();
+    renderQuests();
+  }
+}
+
+function renderDailyPanel() {
+  const can = Progression.canClaimDaily(state);
+  document.getElementById('dailyClaimBtn').disabled = !can;
+  document.getElementById('dailyClaimBtn').textContent = can ? '오늘의 보상 받기' : '오늘은 이미 받았어요';
+  document.getElementById('dailyStreak').textContent = `연속 출석: ${state.daily.streak || 0}일`;
+}
+
+function onClaimDaily() {
+  const reward = Progression.claimDaily(state);
+  if (reward) {
+    SoundSystem.playCoin();
+    UI.toast(`출석 보상 +${reward.money}원!`, '🎁');
+    GameState.saveSoon();
+    renderAll();
+    renderDailyPanel();
+  }
+}
+
+// ----------------------------------------------------------------
+// 도감 화면
+// ----------------------------------------------------------------
+function renderDex() {
+  const grid = document.getElementById('dexGrid');
+  const found = state.recipeDex;
+  document.getElementById('dexCount').textContent = `${found.length} 개 발견`;
+
+  if (found.length === 0) {
+    grid.innerHTML = `<div class="dex-item empty"><div class="dex-emoji">❓</div><div class="dex-label">아직 없음</div></div>`.repeat(6);
+    return;
+  }
+
+  const sorted = [...found].sort((a, b) => b.score - a.score);
+  grid.innerHTML = sorted.map(r => {
+    const s = SEASONINGS.find(x => x.id === r.seasoning) || SEASONINGS[0];
+    const p = POTATOES.find(x => x.id === r.potato) || POTATOES[0];
+    const o = OILS.find(x => x.id === r.oil) || OILS[0];
+    return `
+      <div class="dex-item found">
+        <div class="dex-emoji">${p.emoji}${o.emoji}${s.emoji}</div>
+        <div class="dex-label">${p.name.replace('감자','')}/${s.name}</div>
+        <div class="dex-score">${r.score}점</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ----------------------------------------------------------------
+// 상점 화면 (재료 해금 / 업그레이드)
+// ----------------------------------------------------------------
+function initStoreScreen() {
+  const screen = document.getElementById('screen-store');
+  screen.querySelectorAll('.subtab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      SoundSystem.playClick();
+      UI.switchSubtab(screen, btn.dataset.subtab);
+    });
+  });
+}
+
+function renderStore() {
+  renderIngredientStore('storePotato', POTATOES, 'potato');
+  renderIngredientStore('storeOil', OILS, 'oil');
+  renderIngredientStore('storeSeasoning', SEASONINGS, 'seasoning');
+  renderUpgradeStore();
+}
+
+function renderIngredientStore(containerId, items, category) {
+  const container = document.getElementById(containerId);
+  const discount = EventManager.getUnlockDiscount();
+  container.innerHTML = items.map(item => {
+    const owned = state.unlocked[category].includes(item.id);
+    const cost = Math.round(item.unlockCost * discount);
+    const canBuy = !owned && state.money >= cost;
+    return `
+      <div class="store-item ${owned ? 'owned' : ''}">
+        <div class="store-icon">${item.emoji}</div>
+        <div class="store-info">
+          <div class="store-name">${item.name}</div>
+          <div class="store-desc">${item.desc || ''}</div>
+        </div>
+        ${owned
+          ? `<span class="store-owned-badge">보유중 ✓</span>`
+          : `<button class="store-buy-btn" data-category="${category}" data-id="${item.id}" data-cost="${cost}" ${canBuy ? '' : 'disabled'}>${UI.formatMoney(cost)}원</button>`
+        }
+      </div>
+    `;
+  }).join('');
+
+  container.querySelectorAll('.store-buy-btn').forEach(btn => {
+    btn.addEventListener('click', () => onBuyIngredient(btn.dataset.category, btn.dataset.id, Number(btn.dataset.cost)));
+  });
+}
+
+function onBuyIngredient(category, id, cost) {
+  if (state.money < cost) {
+    SoundSystem.playError();
+    UI.toast('돈이 부족해요', '💸');
+    return;
+  }
+  state.money -= cost;
+  state.unlocked[category].push(id);
+  SoundSystem.playUnlock();
+  UI.toast('새 재료 해금!', '🔓');
+
+  const newQuests = Progression.checkQuests(state);
+  const newAch = Progression.checkAchievements(state);
+  newQuests.forEach(q => UI.toast(`퀘스트 완료: ${q.name}`, '📋'));
+  newAch.forEach(a => UI.toast(`업적 달성: ${a.name}`, '🏆'));
+
+  GameState.saveSoon();
+  renderAll();
+  renderStore();
+}
+
+function renderUpgradeStore() {
+  const container = document.getElementById('storeUpgrade');
+  container.innerHTML = UPGRADES.map(u => {
+    const level = state.upgrades[u.id];
+    const maxed = level >= u.maxLevel;
+    const cost = Math.round(u.baseCost * Math.pow(u.costMul, level));
+    const canBuy = !maxed && state.money >= cost;
+    return `
+      <div class="store-item ${maxed ? 'owned' : ''}">
+        <div class="store-icon">${u.emoji}</div>
+        <div class="store-info">
+          <div class="store-name">${u.name}</div>
+          <div class="store-desc">${u.desc}</div>
+          <div class="store-level">레벨 ${level}/${u.maxLevel}</div>
+        </div>
+        ${maxed
+          ? `<span class="store-owned-badge">최고레벨 ✓</span>`
+          : `<button class="store-buy-btn" data-id="${u.id}" data-cost="${cost}" ${canBuy ? '' : 'disabled'}>${UI.formatMoney(cost)}원</button>`
+        }
+      </div>
+    `;
+  }).join('');
+
+  container.querySelectorAll('.store-buy-btn').forEach(btn => {
+    btn.addEventListener('click', () => onBuyUpgrade(btn.dataset.id, Number(btn.dataset.cost)));
+  });
+}
+
+function onBuyUpgrade(id, cost) {
+  if (state.money < cost) {
+    SoundSystem.playError();
+    UI.toast('돈이 부족해요', '💸');
+    return;
+  }
+  state.money -= cost;
+  state.upgrades[id] += 1;
+  state.stats.totalUpgrades += 1;
+  SoundSystem.playUnlock();
+  UI.toast('장비 업그레이드!', '⚙️');
+
+  const newQuests = Progression.checkQuests(state);
+  const newAch = Progression.checkAchievements(state);
+  newQuests.forEach(q => UI.toast(`퀘스트 완료: ${q.name}`, '📋'));
+  newAch.forEach(a => UI.toast(`업적 달성: ${a.name}`, '🏆'));
+
+  GameState.saveSoon();
+  renderAll();
+  renderStore();
+}
+
+// ----------------------------------------------------------------
+// 통계 화면
+// ----------------------------------------------------------------
+function renderStats() {
+  const s = state.stats;
+  const avg = s.totalFries > 0 ? round1(s.scoreSum / s.totalFries) : 0;
+  const boxes = [
+    { label: '총 제작', value: s.totalFries },
+    { label: '최고 점수', value: s.bestScore },
+    { label: '평균 점수', value: avg },
+    { label: '만점 횟수', value: s.perfectCount },
+    { label: '총 손님', value: s.totalCustomers },
+    { label: '총 매출', value: UI.formatMoney(s.totalRevenue) + '원' },
+    { label: '업그레이드', value: s.totalUpgrades },
+    { label: '도감 등록', value: state.recipeDex.length },
+  ];
+  document.getElementById('statsGrid').innerHTML = boxes.map(b => `
+    <div class="stat-box">
+      <div class="stat-box-label">${b.label}</div>
+      <div class="stat-box-value">${b.value}</div>
+    </div>
+  `).join('');
+
+  const gradeOrder = ['전설의 감튀','장인의 감튀','훌륭함','맛있음','평범함','형편없음','먹을 수 없음'];
+  const total = s.totalFries || 1;
+  document.getElementById('gradeStats').innerHTML = gradeOrder.map(label => {
+    const count = s.gradeCounts[label] || 0;
+    const colorMap = {
+      '전설의 감튀': '#FFD700', '장인의 감튀': '#FF8C42', '훌륭함': '#3DD68C',
+      '맛있음': '#4FC3F7', '평범함': '#B0A89E', '형편없음': '#A0522D', '먹을 수 없음': '#7A7A7A'
+    };
+    const pct = (count / total) * 100;
+    return `
+      <div class="grade-stat-row">
+        <span class="grade-stat-label">${label}</span>
+        <div class="grade-stat-bar-wrap"><div class="grade-stat-bar" style="width:${pct}%; background:${colorMap[label]}"></div></div>
+        <span class="grade-stat-num">${count}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+// ----------------------------------------------------------------
+// 설정 화면
+// ----------------------------------------------------------------
+function initSettingsScreen() {
+  const sfxToggle = document.getElementById('sfxToggle');
+  const bgmToggle = document.getElementById('bgmToggle');
+  sfxToggle.checked = state.settings.sfx;
+  bgmToggle.checked = state.settings.bgm;
+
+  sfxToggle.addEventListener('change', () => {
+    state.settings.sfx = sfxToggle.checked;
+    SoundSystem.setSfxEnabled(sfxToggle.checked);
+    if (sfxToggle.checked) SoundSystem.playClick();
+    GameState.saveSoon();
+  });
+
+  bgmToggle.addEventListener('change', () => {
+    state.settings.bgm = bgmToggle.checked;
+    SoundSystem.setBgmEnabled(bgmToggle.checked);
+    GameState.saveSoon();
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    if (confirm('정말로 모든 게임 데이터를 초기화할까요? 이 작업은 되돌릴 수 없습니다.')) {
+      GameState.reset();
+      state = GameState.data;
+      currentCustomer = null;
+      clearCustomerCard();
+      renderAll();
+      UI.toast('게임 데이터가 초기화되었습니다', '🔄');
+      UI.showScreen('shop');
+    }
+  });
+}
+
+// ----------------------------------------------------------------
+// 랜덤 이벤트 UI 연동
+// ----------------------------------------------------------------
+function initEventManager() {
+  EventManager.onTrigger = (ev) => {
+    SoundSystem.playEvent();
+    const banner = document.getElementById('eventBanner');
+    document.getElementById('eventEmoji').textContent = ev.emoji;
+    document.getElementById('eventText').textContent = `${ev.name}: ${ev.desc}`;
+    banner.hidden = false;
+    UI.toast(ev.name, ev.emoji);
+
+    if (ev.effect.type === 'instantPenalty') {
+      state.money = Math.max(0, state.money - ev.effect.value);
+      UI.updateTopbar(state);
+      GameState.saveSoon();
+    }
+  };
+  EventManager.onEnd = () => {
+    document.getElementById('eventBanner').hidden = true;
+  };
+  EventManager.startLoop();
+}
+
+
+</script>
+
+<script>
+  // 오프닝 스플래시가 끝난 뒤 DOM에서 정리
+  window.addEventListener('load', () => {
+    const splash = document.getElementById('openingSplash');
+    if (!splash) return;
+    window.setTimeout(() => {
+      splash.remove();
+    }, 1900);
+  });
+</script>
+
+</body>
+</html>
