@@ -1,0 +1,3 @@
+{"name":"EVERYTHING","short_name":"EVERYTHING","description":"일상 도구 모음","lang":"ko","start_url":"./","scope":"./","display":"standalone","orientation":"portrait","background_color":"#A495DF","theme_color":"#5B4BFF",
+"icons":[{"src":"icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},{"src":"icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"},{"src":"icon-maskable-512.png","sizes":"512x512","type":"image/png","purpose":"maskable"}],
+"shortcuts":[{"name":"할 일 추가","short_name":"할 일","url":"./?go=task"},{"name":"메모","short_name":"메모","url":"./?go=memo"},{"name":"타이머","short_name":"타이머","url":"./?go=timer"}]}
